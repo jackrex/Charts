@@ -960,62 +960,64 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     
     open func gestureRecognizer(_ gestureRecognizer: NSUIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: NSUIGestureRecognizer) -> Bool
     {
-        #if !os(tvOS)
-        if	((gestureRecognizer is NSUIPinchGestureRecognizer) && (otherGestureRecognizer is NSUIPanGestureRecognizer)) ||
-			((gestureRecognizer is NSUIPanGestureRecognizer) &&	(otherGestureRecognizer is NSUIPinchGestureRecognizer))
-        {
-            return true
-        }
-        #endif
         
-		if (gestureRecognizer is NSUIPanGestureRecognizer &&
-			otherGestureRecognizer is NSUIPanGestureRecognizer && (
-                gestureRecognizer == _panGestureRecognizer
-            ))
-        {
-            var scrollView = self.superview
-			while (scrollView !== nil && !(scrollView! is NSUIScrollView))
-            {
-                scrollView = scrollView?.superview
-            }
-            
-            // If there is two scrollview together, we pick the superview of the inner scrollview.
-            // In the case of UITableViewWrepperView, the superview will be UITableView
-			if let superViewOfScrollView = scrollView?.superview, superViewOfScrollView is NSUIScrollView
-            {
-                scrollView = superViewOfScrollView
-            }
-
-            var foundScrollView = scrollView as? NSUIScrollView
-            
-            if (foundScrollView !== nil && !foundScrollView!.isScrollEnabled)
-            {
-                foundScrollView = nil
-            }
-            
-            var scrollViewPanGestureRecognizer: NSUIGestureRecognizer!
-            
-            if (foundScrollView !== nil)
-            {
-                for scrollRecognizer in foundScrollView!.nsuiGestureRecognizers!
-                {
-                    if (scrollRecognizer is NSUIPanGestureRecognizer)
-                    {
-                        scrollViewPanGestureRecognizer = scrollRecognizer as! NSUIPanGestureRecognizer
-                        break
-                    }
-                }
-            }
-            
-            if (otherGestureRecognizer === scrollViewPanGestureRecognizer)
-            {
-                _outerScrollView = foundScrollView
-                
-                return true
-            }
-        }
-        
-        return false
+        return true
+//        #if !os(tvOS)
+//        if	((gestureRecognizer is NSUIPinchGestureRecognizer) && (otherGestureRecognizer is NSUIPanGestureRecognizer)) ||
+//			((gestureRecognizer is NSUIPanGestureRecognizer) &&	(otherGestureRecognizer is NSUIPinchGestureRecognizer))
+//        {
+//            return true
+//        }
+//        #endif
+//        
+//		if (gestureRecognizer is NSUIPanGestureRecognizer &&
+//			otherGestureRecognizer is NSUIPanGestureRecognizer && (
+//                gestureRecognizer == _panGestureRecognizer
+//            ))
+//        {
+//            var scrollView = self.superview
+//			while (scrollView !== nil && !(scrollView! is NSUIScrollView))
+//            {
+//                scrollView = scrollView?.superview
+//            }
+//            
+//            // If there is two scrollview together, we pick the superview of the inner scrollview.
+//            // In the case of UITableViewWrepperView, the superview will be UITableView
+//			if let superViewOfScrollView = scrollView?.superview, superViewOfScrollView is NSUIScrollView
+//            {
+//                scrollView = superViewOfScrollView
+//            }
+//
+//            var foundScrollView = scrollView as? NSUIScrollView
+//            
+//            if (foundScrollView !== nil && !foundScrollView!.isScrollEnabled)
+//            {
+//                foundScrollView = nil
+//            }
+//            
+//            var scrollViewPanGestureRecognizer: NSUIGestureRecognizer!
+//            
+//            if (foundScrollView !== nil)
+//            {
+//                for scrollRecognizer in foundScrollView!.nsuiGestureRecognizers!
+//                {
+//                    if (scrollRecognizer is NSUIPanGestureRecognizer)
+//                    {
+//                        scrollViewPanGestureRecognizer = scrollRecognizer as! NSUIPanGestureRecognizer
+//                        break
+//                    }
+//                }
+//            }
+//            
+//            if (otherGestureRecognizer === scrollViewPanGestureRecognizer)
+//            {
+//                _outerScrollView = foundScrollView
+//                
+//                return true
+//            }
+//        }
+//        
+//        return false
     }
     
     /// MARK: Viewport modifiers
