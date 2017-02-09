@@ -72,6 +72,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     
     internal var _tapGestureRecognizer: NSUITapGestureRecognizer!
     internal var _doubleTapGestureRecognizer: NSUITapGestureRecognizer!
+    internal var _longTapGestureRecognizer: NSUILongPressGestureRecognizer!
     #if !os(tvOS)
     internal var _pinchGestureRecognizer: NSUIPinchGestureRecognizer!
     #endif
@@ -111,9 +112,11 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         _xAxisRenderer = ChartXAxisRenderer(viewPortHandler: _viewPortHandler, xAxis: _xAxis, transformer: _leftAxisTransformer)
         
         self.highlighter = ChartHighlighter(chart: self)
-        
+
+        _longTapGestureRecognizer = NSUILongPressGestureRecognizer(target: self, action: #selector(BarLineChartViewBase.longTapGestureRecognized(_:)))
         _tapGestureRecognizer = NSUITapGestureRecognizer(target: self, action: #selector(BarLineChartViewBase.tapGestureRecognized(_:)))
         _doubleTapGestureRecognizer = NSUITapGestureRecognizer(target: self, action: #selector(BarLineChartViewBase.doubleTapGestureRecognized(_:)))
+
         _doubleTapGestureRecognizer.nsuiNumberOfTapsRequired = 2
         _panGestureRecognizer = NSUIPanGestureRecognizer(target: self, action: #selector(BarLineChartViewBase.panGestureRecognized(_:)))
         
@@ -122,6 +125,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         self.addGestureRecognizer(_tapGestureRecognizer)
         self.addGestureRecognizer(_doubleTapGestureRecognizer)
         self.addGestureRecognizer(_panGestureRecognizer)
+        self.addGestureRecognizer(_longTapGestureRecognizer)
         
         _doubleTapGestureRecognizer.isEnabled = _doubleTapToZoomEnabled
         _panGestureRecognizer.isEnabled = _dragEnabled
@@ -590,7 +594,22 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     private var _decelerationDisplayLink: NSUIDisplayLink!
     private var _decelerationVelocity = CGPoint()
     
-    @objc private func tapGestureRecognized(_ recognizer: NSUITapGestureRecognizer)
+    @objc fileprivate func longTapGestureRecognized(_ recognizer: NSUILongPressGestureRecognizer) {
+        if _data == nil {
+            return
+        }
+        if !self.isHighLightPerTapEnabled {
+            return
+        }
+        let h = getHighlightByTouchPoint(recognizer.location(in: self))
+        if h === nil {
+            return;
+        } else {
+            self.highlightValueForLongTap(h, callDelegate: true)
+        }
+    }
+    
+    @objc fileprivate func tapGestureRecognized(_ recognizer: NSUITapGestureRecognizer)
     {
         if _data === nil
         {
