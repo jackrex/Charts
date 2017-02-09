@@ -28,6 +28,9 @@ public protocol ChartViewDelegate
     /// - parameter dataSetIndex: The index in the datasets array of the data object the Entrys DataSet is in.
     @objc optional func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: ChartHighlight)
     
+    // Called when long pressed on item happend
+    @objc optional func chartValueLongPressed(_ chartView: ChartViewBase, entry: ChartDataEntry, dataSetIndex: Int, highlight: ChartHighlight)
+    
     // Called when nothing has been selected or an "un-select" has been made.
     @objc optional func chartValueNothingSelected(_ chartView: ChartViewBase)
     
@@ -471,6 +474,24 @@ open class ChartViewBase: NSUIView, ChartDataProvider, ChartAnimatorDelegate
         else
         {
             highlightValue(highlight: ChartHighlight(xIndex: xIndex, dataSetIndex: dataSetIndex), callDelegate: callDelegate)
+        }
+    }
+    
+    open func highlightValueForLongTap(_ highlight: ChartHighlight?, callDelegate: Bool) {
+        var entry: ChartDataEntry?
+        let h = highlight
+        if (h == nil) {
+            return;
+        } else {
+            // set the indices to highlight
+            entry = _data?.getEntryForHighlight(h!)
+            if (entry == nil) {
+                return;
+            } else {
+                if (callDelegate && delegate != nil) {
+                    delegate!.chartValueLongPressed?(self, entry: entry!, dataSetIndex: h!.dataSetIndex, highlight: h!)
+                }
+            }
         }
     }
 
